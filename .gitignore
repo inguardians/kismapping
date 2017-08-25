@@ -1,0 +1,5 @@
+.stack-work/
+test/
+out/
+web/
+*.prof

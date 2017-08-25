@@ -1,0 +1,91 @@
+-- This file has been generated from package.yaml by hpack version 0.17.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           kismapping
+version:        0.0.1
+synopsis:       WiFi Heatmap Generator
+description:    Please see README.md
+category:       Graphics
+homepage:       https://github.com/inguardians/kismapping#readme
+author:         Galen Alderson
+maintainer:     galen@inguardians.com
+copyright:      2017 InGuardians
+license:        GPL-2
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    GPLv2.txt
+    LICENSE.txt
+    README.md
+
+library
+  hs-source-dirs:
+      library
+  ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000
+  build-depends:
+      base
+    , bytestring
+    , mtl
+    , optparse-applicative
+    , Spock
+    , system-filepath
+    , text
+    , vector
+    , aeson
+    , binary
+    , colour
+    , conduit
+    , conduit-combinators
+    , containers
+    , either
+    , exceptions
+    , file-embed
+    , hashable
+    , JuicyPixels
+    , lattices
+    , lens
+    , linear
+    , reflection
+    , repa
+    , statistics
+    , unordered-containers
+    , vector-algorithms
+    , wai
+    , xml-conduit
+    , xml-types
+    , stringsearch
+  exposed-modules:
+      Data.Region
+      Kismapping
+      Kismapping.DataCleanup
+      Kismapping.Input.Kismet
+      Kismapping.Output.File
+      Kismapping.Output.WebApp
+      Kismapping.Propagation
+      Kismapping.Render.Image
+      Kismapping.Render.Polygon
+      Kismapping.Types
+  other-modules:
+      Paths_kismapping
+  default-language: Haskell2010
+
+executable kismapping
+  main-is: Main.hs
+  hs-source-dirs:
+      executable
+  ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , bytestring
+    , mtl
+    , optparse-applicative
+    , Spock
+    , system-filepath
+    , text
+    , vector
+    , kismapping
+  other-modules:
+      Options
+  default-language: Haskell2010

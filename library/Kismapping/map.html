@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Ground Overlays</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // This example uses a GroundOverlay to place an image on the map
+      // showing an antique map of Newark, NJ.
+
+        var historicalOverlay;
+
+        function getJSON(url, f) {
+          var req = new XMLHttpRequest();
+          req.addEventListener("load", function() {
+            f(JSON.parse(this.responseText));
+          });
+          req.open("GET", url);
+          req.send();
+        }
+
+        function initMap() {
+            getJSON("/coords", function(bounds) {
+                getJSON("/config", function(heatmapConfig) {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                      zoom: 17,
+                      center: {
+                        lat: (bounds.north + bounds.south) / 2,
+                        lng: (bounds.east + bounds.west) / 2
+                      }
+                    });
+
+                    if (heatmapConfig.type == "overlayImage") {
+                        var historicalOverlay = new google.maps.GroundOverlay(
+                          '/overlay.png',
+                          bounds);
+                        historicalOverlay.setMap(map);
+                    } else {
+                        getJSON("/overlay.json", function(polygons) {
+                            for (var i = 0; i < polygons.length; i++) {
+                                var p = new google.maps.Polygon(polygons[i]);
+                                p.setMap(map);
+                            }
+                        });
+                        window.map = map;
+                        window.g = google;
+                    }
+                });
+            });
+        }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=${{KEY}}&callback=initMap">
+    </script>
+  </body>
+</html>

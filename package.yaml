@@ -1,0 +1,71 @@
+name: kismapping
+version: '0.0.1'
+synopsis: WiFi Heatmap Generator
+description: Please see README.md
+category: Graphics
+author: Galen Alderson
+maintainer: galen@inguardians.com
+copyright: 2017 InGuardians
+license: GPL-2
+homepage: https://github.com/inguardians/kismapping#readme
+extra-source-files:
+- README.md
+- LICENSE.txt
+- GPLv2.txt
+dependencies:
+- base
+- bytestring
+- mtl
+- optparse-applicative
+- Spock
+- system-filepath
+- text
+- vector
+ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000
+library:
+  source-dirs: library
+  exposed-modules:
+  - Data.Region
+  - Kismapping
+  - Kismapping.DataCleanup
+  - Kismapping.Input.Kismet
+  - Kismapping.Output.File
+  - Kismapping.Output.WebApp
+  - Kismapping.Propagation
+  - Kismapping.Render.Image
+  - Kismapping.Render.Polygon
+  - Kismapping.Types
+  dependencies:
+  - aeson
+  - binary
+  - colour
+  - conduit
+  - conduit-combinators
+  - containers
+  - either
+  - exceptions
+  - file-embed
+  - hashable
+  - JuicyPixels
+  - lattices
+  - lens
+  - linear
+  - reflection
+  - repa
+  - statistics
+  - unordered-containers
+  - vector-algorithms
+  - wai
+  - xml-conduit
+  - xml-types
+  - stringsearch
+executables:
+  kismapping:
+    main: Main.hs
+    source-dirs: executable
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - kismapping
