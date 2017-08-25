@@ -2,7 +2,6 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE Strict #-}
 module Kismapping.Render.Image
   ( renderImage
@@ -59,18 +58,12 @@ data Heatmap = Heatmap
   , heatmapDistSq :: Euclidean -> Int
   }
 
-data QuadTree x a
-  = Leaf x
-  | Branch a a a a
-  deriving (Functor)
-
 subdivide :: Region Double -> Seq (Region Double)
 subdivide region =
-  Seq.unstableSortBy compareRegion (hylo (imageDivisionFactor, region))
+  Seq.unstableSortBy compareRegion (f (imageDivisionFactor, region))
   where
-    hylo = phi . fmap hylo . psi
-    psi (0, r) = Leaf r
-    psi (n, Region minX minY maxX maxY) = Branch tl tr bl br
+    f (0, r) = Seq.singleton r
+    f (n, Region minX minY maxX maxY) = f tl <> f tr <> f bl <> f br
       where
         w = maxX - minX
         h = maxY - minY
@@ -80,8 +73,6 @@ subdivide region =
         tr = (n - 1, Region midX minY maxX midY)
         bl = (n - 1, Region minX midY midX maxY)
         br = (n - 1, Region midX midY maxX maxY)
-    phi (Leaf r) = Seq.singleton r
-    phi (Branch tl tr bl br) = tl <> tr <> bl <> br
     compareRegion (Region lxa lya _ _) (Region lxb lyb _ _) =
       compare (lya, lxa) (lyb, lxb)
 
