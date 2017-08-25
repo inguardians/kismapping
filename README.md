@@ -5,7 +5,7 @@ Kismapping is a WiFi heatmapping tool which consumes
 heatmap. It also serves a google maps web page with the heatmap overlaid on
 top.
 
-Originally inspired by work done by Tom Liston on a tool named "mykismap".
+Originally inspired by work done by Tom Liston ([@tliston](https://twitter.com/tliston)) on a tool named "mykismap".
 
 ## Build
 
