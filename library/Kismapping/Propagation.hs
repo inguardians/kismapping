@@ -21,15 +21,6 @@ import Linear
 -- which is a power of p
 -- Power at distance d = (p * falloffDistance) / d
 -- Decibels at distance d = 10 * log_10 ((p * falloffDistance) / d)
---
--- Max strength is -40 DB, Minimum is -80
---
--- Maybe use a cubic curve? Like:
---         -40dB
---          /
---    ------
---   /
--- -75dB
 strength :: Euclidean -> Double -> Euclidean -> Double
 strength (Euclidean c) falloffDist (Euclidean p) = db
   where
