@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Kismapping.Input.Kismet
   ( readGpsXml
   ) where
@@ -147,16 +148,30 @@ toHeatpoints =
     heatpoint (p, db) =
       HeatPoint (fromPolar p) $ Statistics.mean . Vector.fromList $ toList db
 
-readGpsXml ::
+
+-- parseGpsRunFile :: Parser (Text, (Text -> Text) -> EssidMap -> EssidMap)
+
+readSingleGpsXml ::
      (MonadBaseControl IO m, MonadThrow m, MonadIO m, MonadError Text m)
   => Path.FilePath
-  -> (Vector Text)
-  -> m (Vector (Vector HeatPoint))
-readGpsXml file essids = do
+  -> m ((Text -> Text) -> EssidMap -> EssidMap, HashMap Text Text)
+readSingleGpsXml file = do
   let gpsParentDir = Path.directory file
   (networkFile, points) <- parseFileWith parseGpsRunFile file
   ssids <-
     parseFileWith parseNetworkFile $ gpsParentDir <> Path.fromText networkFile
+  pure (points, ssids)
+
+
+readGpsXml ::
+     (MonadBaseControl IO m, MonadThrow m, MonadIO m, MonadError Text m)
+  => (Vector Path.FilePath)
+  -> (Vector Text)
+  -> m (Vector (Vector HeatPoint))
+readGpsXml files essids = do
+  (pointsVec, ssidsVec) <- fmap Vector.unzip (traverse readSingleGpsXml files)
+  let points = foldr (\l r f x -> l f (r f x)) (const id) pointsVec
+      ssids = fold ssidsVec
   pure
     (Vector.concatMap
        (\essid ->
@@ -165,4 +180,3 @@ readGpsXml file essids = do
             toHeatpoints
             (HashMap.lookup essid (points (lookupEssid ssids) HashMap.empty)))
        essids)
-

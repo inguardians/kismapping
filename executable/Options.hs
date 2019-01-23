@@ -29,7 +29,7 @@ data OutputMethod
 
 data Options = Options
   { optEssid :: Vector Text
-  , optGpsXmlFile :: FS.FilePath
+  , optGpsXmlFile :: Vector FS.FilePath
   , optOutputType :: OutputType
   , optOutputMethod :: OutputMethod
   } deriving (Eq, Show)
@@ -59,11 +59,14 @@ essid =
              "Specify ESSID to use for input data. Use multiple times to include multiple ESSIDs in the same map." <>
            metavar "ESSID")))
 
-gpsXmlFile :: Parser FS.FilePath
+gpsXmlFile :: Parser (Vector FS.FilePath)
 gpsXmlFile =
-  option
-    (FS.fromText . Text.pack <$> str)
-    (short 'i' <> long "input" <> help "Set input GPS XML file." <> metavar "FILE")
+  fmap
+    Vector.fromList
+    (some
+      (option
+        (FS.fromText . Text.pack <$> str)
+        (short 'i' <> long "input" <> help "Set input GPS XML file. Use multiple times to include multiple input files in the same map." <> metavar "FILE")))
 
 
 outputTypeImage :: Parser OutputType

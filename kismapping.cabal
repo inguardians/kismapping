@@ -1,6 +1,8 @@
--- This file has been generated from package.yaml by hpack version 0.17.1.
+-- This file has been generated from package.yaml by hpack version 0.28.2.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 0390b40fc35b522ae1b7922de716fd42a2146fc1b8b1f644ee7e4563b6d6093c
 
 name:           kismapping
 version:        0.0.1
@@ -14,7 +16,6 @@ copyright:      2017 InGuardians
 license:        GPL-2
 build-type:     Simple
 cabal-version:  >= 1.10
-
 extra-source-files:
     GPLv2.txt
     LICENSE.txt
@@ -25,16 +26,12 @@ library
       library
   ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000
   build-depends:
-      base
-    , bytestring
-    , mtl
-    , optparse-applicative
+      JuicyPixels
     , Spock
-    , system-filepath
-    , text
-    , vector
     , aeson
+    , base
     , binary
+    , bytestring
     , colour
     , conduit
     , conduit-combinators
@@ -43,19 +40,23 @@ library
     , exceptions
     , file-embed
     , hashable
-    , JuicyPixels
     , lattices
     , lens
     , linear
+    , mtl
+    , optparse-applicative
     , reflection
     , repa
     , statistics
+    , stringsearch
+    , system-filepath
+    , text
     , unordered-containers
+    , vector
     , vector-algorithms
     , wai
     , xml-conduit
     , xml-types
-    , stringsearch
   exposed-modules:
       Data.Region
       Kismapping
@@ -77,15 +78,16 @@ executable kismapping
       executable
   ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base
+      Spock
+    , base
     , bytestring
+    , kismapping
     , mtl
     , optparse-applicative
-    , Spock
     , system-filepath
     , text
     , vector
-    , kismapping
   other-modules:
       Options
+      Paths_kismapping
   default-language: Haskell2010
