@@ -5,8 +5,11 @@ module Options
   , OutputMethod(..)
   , Options(..)
   , runOptions
+  , mungeToPrintable
   ) where
 
+import Data.Bits
+import qualified Data.ByteString as Strict
 import Data.Semigroup hiding (option)
 import Data.Text (Text)
 import qualified Data.Text as Text
@@ -15,7 +18,6 @@ import Data.Vector (Vector)
 import qualified Data.Vector as Vector
 import qualified Filesystem.Path.CurrentOS as FS
 import Options.Applicative
-import qualified Data.ByteString as Strict
 
 data OutputType
   = OutputTypeImage Int
@@ -47,13 +49,36 @@ options =
     desc =
       "kismapping is a tool for generating and displaying visualizations of WiFi heatmap data overlayed on a map. Provide an ESSID, and a gpsxml file, and kismapping will generate a heatmap from all BSSIDs associated with the specified ESSID. By default, kismapping will generate a 2048x2048 overlay image, and serve it on port 8080."
 
+-- Kismet doesn't make much attempt to deal with text encoding, so it
+-- munges non-ascii characters to octal, with the format \xxx. We have to
+-- apply the same transformation to our own ESSIDs to be able to map
+-- essids with emojis and such
+-- See https://github.com/kismetwireless/kismet/blob/fe048e266e9713425bc50af1057b9068a4ce28d4/util.cc#L75 for the original algorithm
+--
+-- The way we implement this is to encode the text to UTF-8 as a ByteString,
+-- perform the munging, and then decode the result
+mungeToPrintable :: Text -> Text
+mungeToPrintable text =
+  let munge x
+        | x >= 32 && x <= 126 = Strict.singleton x
+        | otherwise =
+          Strict.pack
+            [ fromIntegral (fromEnum '\\')
+            , ((x `shiftR` 6) .&. 0x03) + fromIntegral (fromEnum '0')
+            , ((x `shiftR` 3) .&. 0x07) + fromIntegral (fromEnum '0')
+            , ((x `shiftR` 0) .&. 0x07) + fromIntegral (fromEnum '0')
+            ]
+      mungedText = Strict.concatMap munge (Text.encodeUtf8 text)
+   in Text.decodeUtf8 mungedText
+
+
 essid :: Parser (Vector Text)
 essid =
   fmap
     Vector.fromList
     (some
        (option
-          (Text.pack <$> str)
+          ((mungeToPrintable . Text.pack) <$> str)
           (short 'e' <> long "essid" <>
            help
              "Specify ESSID to use for input data. Use multiple times to include multiple ESSIDs in the same map." <>
