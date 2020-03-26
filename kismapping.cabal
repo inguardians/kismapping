@@ -1,27 +1,41 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0390b40fc35b522ae1b7922de716fd42a2146fc1b8b1f644ee7e4563b6d6093c
+-- hash: 6b421b57f57b18eb05e657676f95bad22a7c7a63b2dc5e706fc1b156cfdf7087
 
 name:           kismapping
-version:        0.0.1
+version:        0.1.0
 synopsis:       WiFi Heatmap Generator
 description:    Please see README.md
 category:       Graphics
 homepage:       https://github.com/inguardians/kismapping#readme
-author:         Galen Alderson
-maintainer:     galen@inguardians.com
-copyright:      2017 InGuardians
+author:         Faith Alderson
+maintainer:     falderson@inguardians.com
+copyright:      2020 InGuardians
 license:        GPL-2
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    GPLv2.txt
-    LICENSE.txt
     README.md
+    LICENSE.txt
+    GPLv2.txt
 
 library
+  exposed-modules:
+      Data.Region
+      Kismapping
+      Kismapping.DataCleanup
+      Kismapping.Input.Kismet
+      Kismapping.Output.File
+      Kismapping.Output.WebApp
+      Kismapping.Propagation
+      Kismapping.Render.Image
+      Kismapping.Render.Polygon
+      Kismapping.Types
+  other-modules:
+      Paths_kismapping
   hs-source-dirs:
       library
   ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000
@@ -57,23 +71,13 @@ library
     , wai
     , xml-conduit
     , xml-types
-  exposed-modules:
-      Data.Region
-      Kismapping
-      Kismapping.DataCleanup
-      Kismapping.Input.Kismet
-      Kismapping.Output.File
-      Kismapping.Output.WebApp
-      Kismapping.Propagation
-      Kismapping.Render.Image
-      Kismapping.Render.Polygon
-      Kismapping.Types
-  other-modules:
-      Paths_kismapping
   default-language: Haskell2010
 
 executable kismapping
   main-is: Main.hs
+  other-modules:
+      Options
+      Paths_kismapping
   hs-source-dirs:
       executable
   ghc-options: -Wall -O2 -fexcess-precision -optc-O3 -optc-ffast-math -Odph -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -rtsopts -threaded -with-rtsopts=-N
@@ -87,7 +91,4 @@ executable kismapping
     , system-filepath
     , text
     , vector
-  other-modules:
-      Options
-      Paths_kismapping
   default-language: Haskell2010

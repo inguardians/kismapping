@@ -1,11 +1,11 @@
 name: kismapping
-version: '0.0.1'
+version: '0.1.0'
 synopsis: WiFi Heatmap Generator
 description: Please see README.md
 category: Graphics
-author: Galen Alderson
-maintainer: galen@inguardians.com
-copyright: 2017 InGuardians
+author: Faith Alderson
+maintainer: falderson@inguardians.com
+copyright: 2020 InGuardians
 license: GPL-2
 homepage: https://github.com/inguardians/kismapping#readme
 extra-source-files:
