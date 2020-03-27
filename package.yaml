@@ -28,7 +28,7 @@ library:
   - Data.Region
   - Kismapping
   - Kismapping.DataCleanup
-  - Kismapping.Input.Kismet
+  - Kismapping.Input.KismetXML
   - Kismapping.Output.File
   - Kismapping.Output.WebApp
   - Kismapping.Propagation
@@ -59,6 +59,7 @@ library:
   - xml-conduit
   - xml-types
   - stringsearch
+  - direct-sqlite
 executables:
   kismapping:
     main: Main.hs

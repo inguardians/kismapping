@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6b421b57f57b18eb05e657676f95bad22a7c7a63b2dc5e706fc1b156cfdf7087
+-- hash: 910c6f745a19e7f725497b283b147834da3f6dbf4ed77e23d847618b70d70e2a
 
 name:           kismapping
 version:        0.1.0
@@ -27,7 +27,7 @@ library
       Data.Region
       Kismapping
       Kismapping.DataCleanup
-      Kismapping.Input.Kismet
+      Kismapping.Input.KismetXML
       Kismapping.Output.File
       Kismapping.Output.WebApp
       Kismapping.Propagation
@@ -35,6 +35,9 @@ library
       Kismapping.Render.Polygon
       Kismapping.Types
   other-modules:
+      Kismapping.Input.Kismet
+      Kismapping.Input.KismetPoints
+      Kismapping.Input.KismetSQLite
       Paths_kismapping
   hs-source-dirs:
       library
@@ -50,6 +53,7 @@ library
     , conduit
     , conduit-combinators
     , containers
+    , direct-sqlite
     , either
     , exceptions
     , file-embed

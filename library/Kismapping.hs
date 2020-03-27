@@ -31,7 +31,7 @@ module Kismapping
   ) where
 
 import Kismapping.DataCleanup
-import Kismapping.Input.Kismet
+import Kismapping.Input.KismetXML
 import Kismapping.Output.WebApp
 import Kismapping.Output.File
 import Kismapping.Render.Image
