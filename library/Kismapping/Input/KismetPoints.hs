@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Kismapping.Input.KismetPoints where
+
 import Data.Foldable
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as HashMap
@@ -14,10 +16,11 @@ import Kismapping.Types
 import qualified Statistics.Sample as Statistics
 
 type EssidMap = HashMap Text BssidMap
+
 type BssidMap = HashMap Text APReadings
 
 -- APReadings is a Map from points in space (using polar coordinates) to signal readings
-type APReadings = HashMap HashablePolar (Seq Double)  
+type APReadings = HashMap HashablePolar (Seq Double)
 
 newtype HashablePolar =
   HashablePolar Polar
@@ -31,7 +34,6 @@ instance Hashable HashablePolar where
 -- corresponding ESSID.
 lookupEssid :: HashMap Text Text -> Text -> Text
 lookupEssid ssidMap bssid = HashMap.lookupDefault "" bssid ssidMap
-
 
 -- Unify two BSSID maps, preserving datapoints from both.
 unionBssidMaps :: BssidMap -> BssidMap -> BssidMap
@@ -53,9 +55,10 @@ insertGpsPoint essid bssid loc db =
 
 toHeatpoints :: BssidMap -> Vector (Vector HeatPoint)
 toHeatpoints bssidMap =
-  let
-    meanHeatpoint (HashablePolar p, dbSeq) =
-      HeatPoint (fromPolar p) (Statistics.mean (Vector.fromList (toList dbSeq)))
-    bssidHeatpoints apReadings = Vector.fromList (fmap meanHeatpoint (HashMap.toList apReadings))
-  in
-    Vector.fromList (toList (fmap bssidHeatpoints bssidMap))
+  let meanHeatpoint (HashablePolar p, dbSeq) =
+        HeatPoint
+          (fromPolar p)
+          (Statistics.mean (Vector.fromList (toList dbSeq)))
+      bssidHeatpoints apReadings =
+        Vector.fromList (fmap meanHeatpoint (HashMap.toList apReadings))
+   in Vector.fromList (toList (fmap bssidHeatpoints bssidMap))

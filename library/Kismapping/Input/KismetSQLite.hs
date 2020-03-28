@@ -3,24 +3,24 @@ module Kismapping.Input.KismetSQLite
   ( readGpsSQLite
   ) where
 
-import Data.Aeson (FromJSON, (.:), parseJSON, decodeStrict', Value(..))
+import Control.Applicative
+import Control.Monad
+import Data.Aeson (FromJSON, Value(..), (.:), decodeStrict', parseJSON)
+import Data.Foldable
 import Data.HashMap.Lazy (HashMap)
 import qualified Data.HashMap.Lazy as HashMap
+import Data.Maybe
+import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
-import qualified Database.SQLite3 as SQLite
-import Database.SQLite3 (ColumnIndex(..), Database)
-import Data.Monoid
 import qualified Data.Vector as Vector
 import Data.Vector (Vector)
+import qualified Database.SQLite3 as SQLite
+import Database.SQLite3 (ColumnIndex(..), Database)
 import qualified Filesystem.Path.CurrentOS as Path
 import Kismapping.Input.KismetPoints
 import Kismapping.Types
-import Control.Monad
-import Data.Foldable
 import Linear.V3
-import Data.Maybe
-import Control.Applicative
 -- https://www.stackage.org/lts-8.20/package/direct-sqlite-2.3.19
 
 
@@ -103,9 +103,10 @@ retrieveReadings db = do
   
 collectReadingsFromFiles :: (Vector Path.FilePath) -> IO EssidMap
 collectReadingsFromFiles files = do
-  allReadings <- forM files $ \file -> do
-    database <- SQLite.open (Text.pack (Path.encodeString file))
-    retrieveReadings database
+  allReadings <-
+    forM files $ \file -> do
+      database <- SQLite.open (Text.pack (Path.encodeString file))
+      retrieveReadings database
   return (foldr unionEssidMaps HashMap.empty allReadings)
 
 readGpsSQLite ::
