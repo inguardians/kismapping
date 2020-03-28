@@ -19,7 +19,6 @@ type BssidMap = HashMap Text APReadings
 -- APReadings is a Map from points in space (using polar coordinates) to signal readings
 type APReadings = HashMap HashablePolar (Seq Double)  
 
--- need a hashable newtype for the APReadings hashmap
 newtype HashablePolar =
   HashablePolar Polar
   deriving (Eq)
@@ -38,6 +37,9 @@ lookupEssid ssidMap bssid = HashMap.lookupDefault "" bssid ssidMap
 unionBssidMaps :: BssidMap -> BssidMap -> BssidMap
 unionBssidMaps = HashMap.unionWith (HashMap.unionWith (<>))
 
+unionEssidMaps :: EssidMap -> EssidMap -> EssidMap
+unionEssidMaps = HashMap.unionWith unionBssidMaps
+
 -- Creates a BssidMap for a single datapoint
 bssidMapSingleton :: Text -> Polar -> Double -> BssidMap
 bssidMapSingleton bssid loc db =
@@ -51,10 +53,9 @@ insertGpsPoint essid bssid loc db =
 
 toHeatpoints :: BssidMap -> Vector (Vector HeatPoint)
 toHeatpoints bssidMap =
-  let meanHeatpoint (HashablePolar p, dbSeq) =
-        HeatPoint
-          (fromPolar p)
-          (Statistics.mean (Vector.fromList (toList dbSeq)))
-      bssidHeatpoints apReadings =
-        Vector.fromList (fmap meanHeatpoint (HashMap.toList apReadings))
-   in Vector.fromList (toList (fmap bssidHeatpoints bssidMap))
+  let
+    meanHeatpoint (HashablePolar p, dbSeq) =
+      HeatPoint (fromPolar p) (Statistics.mean (Vector.fromList (toList dbSeq)))
+    bssidHeatpoints apReadings = Vector.fromList (fmap meanHeatpoint (HashMap.toList apReadings))
+  in
+    Vector.fromList (toList (fmap bssidHeatpoints bssidMap))
