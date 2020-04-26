@@ -37,7 +37,7 @@ import Kismapping.Input.KismetPoints
 type GpsTag = (Alt Maybe Text, (Text -> Text) -> Endo EssidMap)
 
 gpsNetworkFilenameTag :: Text -> GpsTag
-gpsNetworkFilenameTag x = (Alt $ Just x, mempty)
+gpsNetworkFilenameTag x = (Alt (Just x), mempty)
 
 gpsPointTag :: ((Text -> Text) -> EssidMap -> EssidMap) -> GpsTag
 gpsPointTag x = (mempty, Endo . x)
@@ -45,10 +45,10 @@ gpsPointTag x = (mempty, Endo . x)
 type SsidTag = (Alt Maybe Text, Alt Maybe Text)
 
 bssidTag :: Text -> SsidTag
-bssidTag x = (Alt $ Just x, mempty)
+bssidTag x = (Alt (Just x), mempty)
 
 essidTag :: Text -> SsidTag
-essidTag x = (mempty, Alt $ Just x)
+essidTag x = (mempty, Alt (Just x))
 
 type Parser a = forall o m. MonadThrow m => ConduitM Event o m (Maybe a)
 
@@ -62,7 +62,7 @@ instance Exception GpsParseException
 -- provides ESSID information.
 parseNetworkFilenameTag :: Parser GpsTag
 parseNetworkFilenameTag =
-  tagIgnoreAttrs "network-file" $ gpsNetworkFilenameTag <$> content
+  tagIgnoreAttrs "network-file" (fmap gpsNetworkFilenameTag content)
 
 -- | Parse a datapoint, containing signal strength for a BSSID at a specific
 -- position.
