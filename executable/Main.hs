@@ -8,16 +8,17 @@ module Main
   ) where
 
 import Control.Monad.Except
+import qualified Data.ByteString as Strict
 import Data.Semigroup
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Vector (Vector)
+import qualified Data.Vector as Vector
 import Kismapping
 import Options
 import System.Exit (die)
 import qualified Web.Spock as Spock
 import qualified Web.Spock.Config as Spock
-import qualified Data.ByteString as Strict
 
 
 writeRendered :: forall a. FilePath -> (MapRegion, Rendered a) -> IO ()
@@ -56,14 +57,30 @@ withRendered outputType points f =
     OutputTypeImage res -> f $ runRender (renderImage res) points
     OutputTypePolygons -> f $ runRender renderPolygons points
 
+
 readPoints :: Options -> ExceptT Text IO (Vector (Vector HeatPoint))
-readPoints opts =
-  readGpsXml (optGpsXmlFile opts) (optEssid opts) >>= \bssids ->
-    if null bssids
-      then throwError
-             ("No BSSIDs found with given ESSIDs: " <>
-              Text.pack (show (optEssid opts)))
-      else pure (removeInvalidData bssids)
+readPoints opts = do
+  let gpsFiles =
+        Vector.map
+          (\(_, fpath) -> fpath)
+          (Vector.filter
+             (\(ftype, _) -> ftype == InputTypeGpsXML)
+             (optInputFile opts))
+      sqliteFiles =
+        Vector.map
+          (\(_, fpath) -> fpath)
+          (Vector.filter
+             (\(ftype, _) -> ftype == InputTypeSQLite)
+             (optInputFile opts))
+  bssids <-
+    do gpsAPs <- readGpsXml gpsFiles (optEssid opts)
+       sqliteAPs <- readGpsSQLite sqliteFiles (optEssid opts)
+       pure (gpsAPs Vector.++ sqliteAPs)
+  if null bssids
+    then throwError
+           ("No BSSIDs found with given ESSIDs: " <>
+            Text.pack (show (optEssid opts)))
+    else pure (removeInvalidData bssids)
   
 processMap :: Options -> IO ()
 processMap opts = do

@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Options
-  ( OutputType(..)
+  ( InputType(..)
+  , OutputType(..)
   , OutputMethod(..)
   , Options(..)
   , runOptions
@@ -19,6 +20,11 @@ import qualified Data.Vector as Vector
 import qualified Filesystem.Path.CurrentOS as FS
 import Options.Applicative
 
+data InputType
+  = InputTypeGpsXML
+  | InputTypeSQLite
+  deriving (Eq, Read, Show)
+
 data OutputType
   = OutputTypeImage Int
   | OutputTypePolygons
@@ -31,7 +37,7 @@ data OutputMethod
 
 data Options = Options
   { optEssid :: Vector Text
-  , optGpsXmlFile :: Vector FS.FilePath
+  , optInputFile :: Vector (InputType, FS.FilePath)
   , optOutputType :: OutputType
   , optOutputMethod :: OutputMethod
   } deriving (Eq, Show)
@@ -45,7 +51,7 @@ options =
     (helper <*> optParser)
     (fullDesc <> progDesc desc <> header "kismapping - WiFi Heatmap Generator")
   where
-    optParser = Options <$> essid <*> gpsXmlFile <*> outputType <*> outputMethod
+    optParser = Options <$> essid <*> inputFiles <*> outputType <*> outputMethod
     desc =
       "kismapping is a tool for generating and displaying visualizations of WiFi heatmap data overlayed on a map. Provide an ESSID, and a gpsxml file, and kismapping will generate a heatmap from all BSSIDs associated with the specified ESSID. By default, kismapping will generate a 2048x2048 overlay image, and serve it on port 8080."
 
@@ -84,15 +90,24 @@ essid =
              "Specify ESSID to use for input data. Use multiple times to include multiple ESSIDs in the same map." <>
            metavar "ESSID")))
 
-gpsXmlFile :: Parser (Vector FS.FilePath)
-gpsXmlFile =
-  fmap
-    Vector.fromList
-    (some
-      (option
-        (FS.fromText . Text.pack <$> str)
-        (short 'i' <> long "input" <> help "Set input GPS XML file. Use multiple times to include multiple input files in the same map." <> metavar "FILE")))
-
+inputFiles :: Parser (Vector (InputType, FS.FilePath))
+inputFiles =
+  let singleFile = do
+        fname <- str
+        let path = FS.fromText (Text.pack fname)
+        itype <-
+          case FS.extension path of
+            Just "kismet" -> pure InputTypeSQLite
+            Just "gpsxml" -> pure InputTypeGpsXML
+            _ -> empty
+        pure (itype, path)
+      optInfo =
+        short 'i' <>
+        long "input" <>
+        help
+          "Set input file. Use multiple times to include multiple input files in the same map. Provide either .gpsxml or .kismet files" <>
+        metavar "FILE"
+   in fmap Vector.fromList (some (option singleFile optInfo))
 
 outputTypeImage :: Parser OutputType
 outputTypeImage =

@@ -8,6 +8,9 @@ module Kismapping
   -- XML parsing
   , readGpsXml
 
+  -- SQLite parsing
+  , readGpsSQLite
+
   -- Outputs
   , outputFiles
   , OutputPaths(..)
@@ -32,6 +35,7 @@ module Kismapping
 
 import Kismapping.DataCleanup
 import Kismapping.Input.KismetXML
+import Kismapping.Input.KismetSQLite
 import Kismapping.Output.WebApp
 import Kismapping.Output.File
 import Kismapping.Render.Image

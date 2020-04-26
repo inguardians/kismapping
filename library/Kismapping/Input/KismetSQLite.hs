@@ -1,10 +1,13 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Kismapping.Input.KismetSQLite
   ( readGpsSQLite
   ) where
-
 import Control.Applicative
 import Control.Monad
+import Control.Monad.Catch
+import Control.Monad.Except
+import Control.Monad.Trans.Either
 import Data.Aeson (FromJSON, Value(..), (.:), decodeStrict', parseJSON)
 import Data.Foldable
 import Data.HashMap.Lazy (HashMap)
@@ -110,9 +113,12 @@ collectReadingsFromFiles files = do
   return (foldr unionEssidMaps HashMap.empty allReadings)
 
 readGpsSQLite ::
-     (Vector Path.FilePath) -> (Vector Text) -> IO (Vector (Vector HeatPoint))
+     (MonadThrow m, MonadIO m, MonadError Text m)
+  => (Vector Path.FilePath)
+  -> (Vector Text)
+  -> m (Vector (Vector HeatPoint))
 readGpsSQLite files names = do
-  readings <- collectReadingsFromFiles files
+  readings <- liftIO (collectReadingsFromFiles files)
   let pointsForName name =
         toHeatpoints (HashMap.lookupDefault HashMap.empty name readings)
   return (Vector.concatMap pointsForName names)
