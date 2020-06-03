@@ -53,7 +53,7 @@ options =
   where
     optParser = Options <$> essid <*> inputFiles <*> outputType <*> outputMethod
     desc =
-      "kismapping is a tool for generating and displaying visualizations of WiFi heatmap data overlayed on a map. Provide an ESSID, and a gpsxml file, and kismapping will generate a heatmap from all BSSIDs associated with the specified ESSID. By default, kismapping will generate a 2048x2048 overlay image, and serve it on port 8080."
+      "kismapping is a tool for generating and displaying visualizations of WiFi heatmap data overlayed on a map. Provide an ESSID, and a .kismet or .gpsxml file, and kismapping will generate a heatmap from all BSSIDs associated with the specified ESSID. By default, kismapping will generate a 2048x2048 overlay image, and serve it on port 8080."
 
 -- Kismet doesn't make much attempt to deal with text encoding, so it
 -- munges non-ascii characters to octal, with the format \xxx. We have to
